@@ -1,0 +1,118 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <iomanip>
+
+using namespace std;
+
+class Expense {
+public:
+    string category;
+    double amount;
+
+    Expense(string c, double a) {
+        category = c;
+        amount = a;
+    }
+};
+
+vector<Expense> expenses;
+
+void saveExpenses() {
+    ofstream file("expenses.txt");
+    for (auto &e : expenses) {
+        file << e.category << " " << e.amount << endl;
+    }
+    file.close();
+}
+
+void loadExpenses() {
+    ifstream file("expenses.txt");
+    string category;
+    double amount;
+
+    while (file >> category >> amount) {
+        expenses.push_back(Expense(category, amount));
+    }
+
+    file.close();
+}
+
+void addExpense() {
+    string category;
+    double amount;
+
+    cout << "Enter category: ";
+    cin >> category;
+
+    cout << "Enter amount: ";
+    cin >> amount;
+
+    expenses.push_back(Expense(category, amount));
+    saveExpenses();
+
+    cout << "Expense added successfully.\n";
+}
+
+void viewExpenses() {
+    if (expenses.empty()) {
+        cout << "No expenses found.\n";
+        return;
+    }
+
+    cout << "\nExpense List\n";
+    cout << left << setw(20) << "Category" << setw(10) << "Amount" << endl;
+
+    for (auto &e : expenses) {
+        cout << left << setw(20) << e.category
+             << setw(10) << fixed << setprecision(2)
+             << e.amount << endl;
+    }
+}
+
+void totalExpenses() {
+    double total = 0;
+
+    for (auto &e : expenses) {
+        total += e.amount;
+    }
+
+    cout << "Total Expenses: " << fixed << setprecision(2)
+         << total << endl;
+}
+
+int main() {
+    loadExpenses();
+
+    int choice;
+
+    do {
+        cout << "\n=== Personal Expense Tracker ===\n";
+        cout << "1. Add Expense\n";
+        cout << "2. View Expenses\n";
+        cout << "3. Show Total Expenses\n";
+        cout << "4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                addExpense();
+                break;
+            case 2:
+                viewExpenses();
+                break;
+            case 3:
+                totalExpenses();
+                break;
+            case 4:
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid choice.\n";
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
